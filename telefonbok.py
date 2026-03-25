@@ -4,7 +4,7 @@ def telefon():
         "Liam": "0723215088",
         "Julle": "0760406815"
     }  
-    
+    #hej
     def lägga_till():   
         namn = input("Vad är deras namn ")
         telefonnummer = input("Vad är deras telefonnummer ")
