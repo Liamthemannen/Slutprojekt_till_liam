@@ -15,6 +15,9 @@ def telefon():
     
     def addPerson():   
         name = input("Vad är deras namn ")
+        bigLetter = name[0].upper()
+        name = bigLetter + name[1:]
+        print(name)
         phonenumber = input("Vad är deras telefonnummer ")
         Phonebook[name] = phonenumber
 
