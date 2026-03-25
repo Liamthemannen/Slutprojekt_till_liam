@@ -58,7 +58,7 @@ def telefon():
                     if choice == "1":
                         addPerson()
                         print("Personen la tills")
-                        savePhonebook()
+                        savePhonebook(Phonebook)
                         print()
                 
                     elif choice == "2":
@@ -77,7 +77,7 @@ def telefon():
                                 print()
                             print("skriv nameet på personen du vill ta bort i listan ovan")
                             removePerson()
-                            savePhonebook()
+                            savePhonebook(Phonebook)
                         else:
                             print("Listan är tom ")
                         
