@@ -1,75 +1,99 @@
+import json
 def telefon():
 
-    telefonbok = {
-        "Liam": "0723215088",
-        "Julle": "0760406815"
-    }  
-    #hej
-    def lägga_till():   
-        namn = input("Vad är deras namn ")
-        telefonnummer = input("Vad är deras telefonnummer ")
-        telefonbok[namn] = telefonnummer
-
-    def ta_bort():
-        tabort_val = input("Vilken vill du ta bort ")
-        telefonbok.pop(tabort_val)
+    def loadPhonebook():
+        try:
+            with open("phonebook.json", "r") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return {}
     
-    def söka_namn():
-        söknamn = input("Vilket namn vill du söka på? ")
-        if söknamn in telefonbok:
-            print("Telefonnumret är: ")
-            print(telefonbok[söknamn])
-        else:
+    def savePhonebook(Phonebook):
+        with open("phonebook.json", "w") as file:
+            json.dump(Phonebook, file, indent=4)
+    Phonebook = loadPhonebook()
+    
+    def addPerson():   
+        name = input("Vad är deras namn ")
+        phonenumber = input("Vad är deras telefonnummer ")
+        Phonebook[name] = phonenumber
+
+    def removePerson():
+        removeChoice = input("Vilken vill du ta bort ").lower()
+        for name in list(Phonebook.keys()):
+            if removeChoice == name.lower():
+                Phonebook.pop(name)
+                print("Personen togs bort.")
+                return
+    
+    def searchName():
+        searchChoice = input("Vilket namn vill du söka på? ").lower()
+        found = False
+
+        for name, phonenumber in list(Phonebook.items()):
+            if searchChoice == name.lower():
+                print("Telefonnumret är:")
+                print(phonenumber)
+                found = True
+                break
+        if not found:
             print("Personen finns inte")
 
     def meny():
-        kör = True
-        while kör:
-            print()
-            print("Skriv 1 för lägga till nummer ")
-            print("Skriv 2 för få upp lista på nummer ")
-            print("Skriv 3 för att ta bort nummer ")
-            print("Skriv 4 för söka genom namn ")
-            print("Skriv q för avsluta ")
         
-        
-            val = input("Vilken väljer du? ")
-            print()
-        
-            if val == "1":
-                lägga_till()
-                print("Personen la tills")
-                print()
-        
-            elif val == "2":
-                if telefonbok:
-                    print("Lista på allas nummer:")
-                    for namn, telefonnummer in telefonbok.items():
-                        print(namn, telefonnummer)
+            running = True
+            while running:
+                try:
+                    print()
+                    print("Skriv 1 för lägga till nummer ")
+                    print("Skriv 2 för få upp lista på nummer ")
+                    print("Skriv 3 för att ta bort nummer ")
+                    print("Skriv 4 för söka genom name ")
+                    print("Skriv q för avsluta ")
+                
+                
+                    choice = input("Vilken väljer du? ")
+                    print()
+                
+                    if choice == "1":
+                        addPerson()
+                        print("Personen la tills")
+                        savePhonebook()
                         print()
-                else:
-                    print("Listan är tom ")
                 
-            elif val == "3":
-                if telefonbok:
-                    for namn, telefonnummer in telefonbok.items():
-                        print(namn, telefonnummer)
+                    elif choice == "2":
+                        if Phonebook:
+                            print("Lista på allas nummer:")
+                            for name, phonenumber in Phonebook.items():
+                                print(name, phonenumber)                                
+                                print()
+                        else:
+                            print("Listan är tom ")
+                        
+                    elif choice == "3":
+                        if Phonebook:
+                            for name, phonenumber in Phonebook.items():
+                                print(name, phonenumber)
+                                print()
+                            print("skriv nameet på personen du vill ta bort i listan ovan")
+                            removePerson()
+                            savePhonebook()
+                        else:
+                            print("Listan är tom ")
+                        
+                    elif choice == "4":
+                        searchName()
                         print()
-                    print("skriv namnet på personen du vill ta bort i listan ovan")
-                    ta_bort()
-                else:
-                    print("Listan är tom ")
-                
-            elif val == "4":
-                söka_namn()
-                print()
-            
-            elif val == "q" or val == "Q":
-                print("Stänger av...")
-                kör = False
-                
-            else:
-                print("Välj något i menyn" )
+                    
+                    elif choice.lower() == "q":
+                        print("Stänger av...")
+                        running = False
+                        
+                    else:
+                        print("Välj något i menyn" )
+                except Exception:
+                    print("Något gick fel:")
+                    print("Testa igen.")
     meny()
     
 telefon()
