@@ -43,60 +43,60 @@ def telefon():
             print("Personen finns inte")
 
     def meny():
-        
-            running = True
-            while running:
-                try:
+        running = True
+        while running:
+            try:
+                print()
+                print("Skriv 1 för lägga till nummer")
+                print("Skriv 2 för få upp lista på nummer")
+                print("Skriv 3 för att ta bort nummer")
+                print("Skriv 4 för söka genom name")
+                print("Skriv q för avsluta")
+                print()
+
+                choice = input("Vilken väljer du? ")
+                print()
+
+                if choice == "1":
+                    addPerson()
+                    print("Personen la tills")
+                    savePhonebook(Phonebook)
                     print()
-                    print("Skriv 1 för lägga till nummer ")
-                    print("Skriv 2 för få upp lista på nummer ")
-                    print("Skriv 3 för att ta bort nummer ")
-                    print("Skriv 4 för söka genom name ")
-                    print("Skriv q för avsluta ")
-                
-                
-                    choice = input("Vilken väljer du? ")
-                    print()
-                
-                    if choice == "1":
-                        addPerson()
-                        print("Personen la tills")
-                        savePhonebook(Phonebook)
+
+                elif choice == "2":
+                    if Phonebook:
+                        print("Lista på allas nummer:")
+                        for name, phonenumber in Phonebook.items():
+                            print(name, phonenumber)
                         print()
-                
-                    elif choice == "2":
-                        if Phonebook:
-                            print("Lista på allas nummer:")
-                            for name, phonenumber in Phonebook.items():
-                                print(name, phonenumber)                                
-                                print()
-                        else:
-                            print("Listan är tom ")
-                        
-                    elif choice == "3":
-                        if Phonebook:
-                            for name, phonenumber in Phonebook.items():
-                                print(name, phonenumber)
-                                print()
-                            print("skriv nameet på personen du vill ta bort i listan ovan")
-                            removePerson()
-                            savePhonebook(Phonebook)
-                        else:
-                            print("Listan är tom ")
-                        
-                    elif choice == "4":
-                        searchName()
-                        print()
-                    
-                    elif choice.lower() == "q":
-                        print("Stänger av...")
-                        running = False
-                        
                     else:
-                        print("Välj något i menyn" )
-                except Exception:
-                    print("Något gick fel:")
-                    print("Testa igen.")
+                        print("Listan är tom ")
+
+                elif choice == "3":
+                    if Phonebook:
+                        for name, phonenumber in Phonebook.items():
+                            print(name, phonenumber)
+                        print()
+                        print("skriv nameet på personen du vill ta bort i listan ovan")
+                        removePerson()
+                        savePhonebook(Phonebook)
+                    else:
+                        print("Listan är tom ")
+
+                elif choice == "4":
+                    searchName()
+                    print()
+
+                elif choice.lower() == "q":
+                    print("Stänger av...")
+                    running = False
+
+                else:
+                    print("Välj något i menyn")
+
+            except Exception:
+                print("Något gick fel:")
+                print("Testa igen.")
     meny()
     
 telefon()
