@@ -41,6 +41,32 @@ def telefon():
                 break
         if not found:
             print("Personen finns inte")
+    
+    def editContact():
+        searchChoice = input("Vilket namn vill du söka på? ").lower()
+        found = False
+
+        for name, phonenumber in list(Phonebook.items()):
+            if searchChoice == name.lower():
+                print("Telefonnumret är: " + phonenumber)
+                newName = input("Skriv nya namnet (Tryck enter för behålla det gamla) ")
+                if newName:
+                    newName = newName.title()
+                else:
+                    newName = name
+                newPhonenumber = int(input("Skriv nya telefonnumret (Tryck enter för behålla det gamla) "))
+                if newPhonenumber:
+                    phonenumber = newPhonenumber
+                Phonebook[newName] = phonenumber
+
+                if newName != name:
+                    del Phonebook[name]
+
+                print("Kontakten har uppdaterats.")
+                found = True
+                break
+        if not found:
+            print("Personen finns inte")
 
     def meny():
         running = True
@@ -50,7 +76,8 @@ def telefon():
                 print("Skriv 1 för lägga till nummer")
                 print("Skriv 2 för få upp lista på nummer")
                 print("Skriv 3 för att ta bort nummer")
-                print("Skriv 4 för söka genom name")
+                print("Skriv 4 för söka genom kontakterna")
+                print("Skriv 5 för ändra kontakt")
                 print("Skriv q för avsluta")
                 print()
 
@@ -85,6 +112,10 @@ def telefon():
 
                 elif choice == "4":
                     searchName()
+                    print()
+                    
+                elif choice == "5":
+                    editContact()
                     print()
 
                 elif choice.lower() == "q":
