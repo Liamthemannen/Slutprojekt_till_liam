@@ -13,9 +13,19 @@ def telefon():
             json.dump(Phonebook, file, indent=4)
     Phonebook = loadPhonebook()
     
+    def searchSuggestion():
+        searchChoice = searchChoice = input("Vilket namn vill du söka på? ").lower()
+        found = False
+
+        for name, phonenumber in Phonebook.items():
+            if searchChoice in name.lower():
+                print(name, phonenumber)
+                found = True
+
+        if not found:
+            print("Ingen kontakt hittades")
     
     def sortPhonebook():
-        
         if not Phonebook:
             print("Listan är tom")
             return
@@ -138,7 +148,7 @@ def telefon():
                         print("Listan är tom ")
 
                 elif choice == "4":
-                    searchName()
+                    searchSuggestion()
                     print()
                     
                 elif choice == "5":
