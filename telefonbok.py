@@ -13,6 +13,27 @@ def telefon():
             json.dump(Phonebook, file, indent=4)
     Phonebook = loadPhonebook()
     
+    def sortPhonebook():
+        if not Phonebook:
+            print("Listan är tom")
+            return
+
+        print("1. Sortera efter namn")
+        print("2. Sortera efter nummer")
+        choice = input("Välj: ")
+
+        if choice == "1":
+            sorted_list = sorted(Phonebook.items())
+        elif choice == "2":
+            sorted_list = sorted(Phonebook.items(), key=lambda x: x[1])
+        else:
+            print("Fel val")
+            return
+
+        for name, phonenumber in sorted_list:
+            print(name, phonenumber)
+        
+    
     def addPerson():   
         name = input("Vad är deras namn ")
         bigLetter = name[0].upper()
