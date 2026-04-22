@@ -13,6 +13,42 @@ def telefon():
             json.dump(Phonebook, file, indent=4)
     Phonebook = loadPhonebook()
     
+    def searchSuggestion():
+        searchChoice = searchChoice = input("Vilket namn vill du söka på? ").lower()
+        found = False
+
+        for name, phonenumber in Phonebook.items():
+            if searchChoice in name.lower():
+                print(name, phonenumber)
+                found = True
+
+        if not found:
+            print("Ingen kontakt hittades")
+    
+    def sortPhonebook():
+        if not Phonebook:
+            print("Listan är tom")
+            return
+
+        print("1. Sortera efter namn A-Z")
+        print("2. Sortera efter namn Z-A")
+        print("3. Sortera efter nummer")
+        choice = input("Välj: ")
+
+        if choice == "1":
+            sorted_list = sorted(Phonebook.items())
+        elif choice == "2":
+            sorted_list = sorted(Phonebook.items(), reverse=True)
+        elif choice == "3":
+            sorted_list = sorted(Phonebook.items(), key=lambda x: x[1])
+        else:
+            print("Fel val")
+            return
+
+        for name, phonenumber in sorted_list:
+            print(name, phonenumber)
+        
+    
     def addPerson():   
         name = input("Vad är deras namn ")
         bigLetter = name[0].upper()
@@ -78,6 +114,7 @@ def telefon():
                 print("Skriv 3 för att ta bort nummer")
                 print("Skriv 4 för söka genom kontakterna")
                 print("Skriv 5 för ändra kontakt")
+                print("Skriv S för att sortera listan")
                 print("Skriv q för avsluta")
                 print()
 
@@ -111,12 +148,15 @@ def telefon():
                         print("Listan är tom ")
 
                 elif choice == "4":
-                    searchName()
+                    searchSuggestion()
                     print()
                     
                 elif choice == "5":
                     editContact()
                     print()
+                    
+                elif choice.lower() == "s":
+                    sortPhonebook()
 
                 elif choice.lower() == "q":
                     print("Stänger av...")
