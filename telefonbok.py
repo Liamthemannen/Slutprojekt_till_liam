@@ -31,7 +31,6 @@ class PhonebookApp(ctk.CTk):
         self.title("Telefonbok")
         self.geometry("1100x700")
         self.minsize(900, 600)
-
         self.configure(fg_color="#0B0F1E")
 
         self.create_sidebar()
@@ -275,7 +274,6 @@ class PhonebookApp(ctk.CTk):
 
     def search_contacts(self):
         search = self.search_entry.get().lower()
-
         results = []
 
         for name, number in self.phonebook.items():
@@ -325,12 +323,19 @@ class PhonebookApp(ctk.CTk):
         )
         name_entry.pack(pady=10)
 
+        def only_numbers(text):
+            return text.isdigit() or text == ""
+
+        validate_command = window.register(only_numbers)
+
         number_entry = ctk.CTkEntry(
             window,
             width=300,
             height=45,
             placeholder_text="Telefonnummer",
-            corner_radius=14
+            corner_radius=14,
+            validate="key",
+            validatecommand=(validate_command, "%P")
         )
         number_entry.pack(pady=10)
 
@@ -350,12 +355,10 @@ class PhonebookApp(ctk.CTk):
                 del self.phonebook[old_name]
 
             self.phonebook[name] = number
-
             save_phonebook(self.phonebook)
 
             self.selected_name = name
             self.show_contacts()
-
             window.destroy()
 
         ctk.CTkButton(
@@ -381,11 +384,9 @@ class PhonebookApp(ctk.CTk):
 
         if answer:
             del self.phonebook[self.selected_name]
-
             save_phonebook(self.phonebook)
 
             self.selected_name = None
-
             self.show_contacts()
 
 
