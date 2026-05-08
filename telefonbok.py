@@ -31,10 +31,12 @@ class PhonebookApp(ctk.CTk):
         self.title("Telefonbok")
         self.geometry("1100x700")
         self.minsize(900, 600)
+
         self.configure(fg_color="#0B0F1E")
 
         self.create_sidebar()
         self.create_main_area()
+
         self.show_contacts()
 
     def create_sidebar(self):
@@ -71,7 +73,12 @@ class PhonebookApp(ctk.CTk):
             hover_color="#2A163B",
             command=self.destroy
         )
-        self.exit_button.pack(side="bottom", pady=35, padx=25, fill="x")
+        self.exit_button.pack(
+            side="bottom",
+            pady=35,
+            padx=25,
+            fill="x"
+        )
 
     def nav_button(self, text, command):
         button = ctk.CTkButton(
@@ -85,7 +92,12 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18),
             command=command
         )
-        button.pack(pady=8, padx=25, fill="x")
+
+        button.pack(
+            pady=8,
+            padx=25,
+            fill="x"
+        )
 
     def create_main_area(self):
         self.main = ctk.CTkFrame(
@@ -95,10 +107,25 @@ class PhonebookApp(ctk.CTk):
             border_width=1,
             border_color="#6C2DC7"
         )
-        self.main.pack(side="right", fill="both", expand=True, padx=25, pady=25)
 
-        header_frame = ctk.CTkFrame(self.main, fg_color="transparent")
-        header_frame.pack(fill="x", padx=40, pady=(35, 10))
+        self.main.pack(
+            side="right",
+            fill="both",
+            expand=True,
+            padx=25,
+            pady=25
+        )
+
+        header_frame = ctk.CTkFrame(
+            self.main,
+            fg_color="transparent"
+        )
+
+        header_frame.pack(
+            fill="x",
+            padx=40,
+            pady=(35, 10)
+        )
 
         self.title_label = ctk.CTkLabel(
             header_frame,
@@ -106,6 +133,7 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 42, "bold"),
             text_color="#E84AAE"
         )
+
         self.title_label.pack(side="left")
 
         self.search_entry = ctk.CTkEntry(
@@ -118,11 +146,24 @@ class PhonebookApp(ctk.CTk):
             border_color="#A64DFF",
             font=("Arial", 16)
         )
-        self.search_entry.pack(side="right")
-        self.search_entry.bind("<KeyRelease>", lambda event: self.search_contacts())
 
-        button_frame = ctk.CTkFrame(self.main, fg_color="transparent")
-        button_frame.pack(fill="x", padx=40, pady=25)
+        self.search_entry.pack(side="right")
+
+        self.search_entry.bind(
+            "<KeyRelease>",
+            lambda event: self.search_contacts()
+        )
+
+        button_frame = ctk.CTkFrame(
+            self.main,
+            fg_color="transparent"
+        )
+
+        button_frame.pack(
+            fill="x",
+            padx=40,
+            pady=25
+        )
 
         self.add_button = ctk.CTkButton(
             button_frame,
@@ -134,7 +175,13 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18, "bold"),
             command=self.open_add_window
         )
-        self.add_button.pack(side="left", expand=True, fill="x", padx=8)
+
+        self.add_button.pack(
+            side="left",
+            expand=True,
+            fill="x",
+            padx=8
+        )
 
         self.remove_button = ctk.CTkButton(
             button_frame,
@@ -146,7 +193,13 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18, "bold"),
             command=self.remove_contact
         )
-        self.remove_button.pack(side="left", expand=True, fill="x", padx=8)
+
+        self.remove_button.pack(
+            side="left",
+            expand=True,
+            fill="x",
+            padx=8
+        )
 
         self.edit_button = ctk.CTkButton(
             button_frame,
@@ -158,7 +211,13 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18, "bold"),
             command=self.open_edit_window
         )
-        self.edit_button.pack(side="left", expand=True, fill="x", padx=8)
+
+        self.edit_button.pack(
+            side="left",
+            expand=True,
+            fill="x",
+            padx=8
+        )
 
         self.update_button = ctk.CTkButton(
             button_frame,
@@ -170,7 +229,13 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18, "bold"),
             command=self.show_contacts
         )
-        self.update_button.pack(side="left", expand=True, fill="x", padx=8)
+
+        self.update_button.pack(
+            side="left",
+            expand=True,
+            fill="x",
+            padx=8
+        )
 
         self.contact_frame = ctk.CTkScrollableFrame(
             self.main,
@@ -179,7 +244,13 @@ class PhonebookApp(ctk.CTk):
             border_width=1,
             border_color="#30384F"
         )
-        self.contact_frame.pack(fill="both", expand=True, padx=40, pady=(5, 20))
+
+        self.contact_frame.pack(
+            fill="both",
+            expand=True,
+            padx=40,
+            pady=(5, 20)
+        )
 
         self.total_label = ctk.CTkLabel(
             self.main,
@@ -187,6 +258,7 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 18),
             text_color="white"
         )
+
         self.total_label.pack(pady=(0, 25))
 
     def clear_contacts(self):
@@ -205,6 +277,7 @@ class PhonebookApp(ctk.CTk):
             fg_color="#1F2937",
             height=50
         )
+
         header.pack(fill="x", pady=(0, 5))
 
         ctk.CTkLabel(
@@ -233,9 +306,13 @@ class PhonebookApp(ctk.CTk):
                 corner_radius=10,
                 fg_color="#111827"
             )
+
             row.pack(fill="x", pady=4, padx=8)
 
-            row.bind("<Button-1>", lambda event, n=name: self.select_contact(n))
+            row.bind(
+                "<Button-1>",
+                lambda event, n=name: self.select_contact(n)
+            )
 
             icon = ctk.CTkLabel(
                 row,
@@ -243,6 +320,7 @@ class PhonebookApp(ctk.CTk):
                 font=("Arial", 26),
                 width=60
             )
+
             icon.pack(side="left", padx=(15, 5))
 
             name_label = ctk.CTkLabel(
@@ -252,6 +330,7 @@ class PhonebookApp(ctk.CTk):
                 width=300,
                 anchor="w"
             )
+
             name_label.pack(side="left", padx=10)
 
             number_label = ctk.CTkLabel(
@@ -260,20 +339,39 @@ class PhonebookApp(ctk.CTk):
                 font=("Arial", 18),
                 anchor="w"
             )
+
             number_label.pack(side="left", padx=30)
 
-            icon.bind("<Button-1>", lambda event, n=name: self.select_contact(n))
-            name_label.bind("<Button-1>", lambda event, n=name: self.select_contact(n))
-            number_label.bind("<Button-1>", lambda event, n=name: self.select_contact(n))
+            icon.bind(
+                "<Button-1>",
+                lambda event, n=name: self.select_contact(n)
+            )
 
-        self.total_label.configure(text=f"Totalt: {count} kontakter")
+            name_label.bind(
+                "<Button-1>",
+                lambda event, n=name: self.select_contact(n)
+            )
+
+            number_label.bind(
+                "<Button-1>",
+                lambda event, n=name: self.select_contact(n)
+            )
+
+        self.total_label.configure(
+            text=f"Totalt: {count} kontakter"
+        )
 
     def select_contact(self, name):
         self.selected_name = name
-        messagebox.showinfo("Vald kontakt", f"Du valde {name}")
+
+        messagebox.showinfo(
+            "Vald kontakt",
+            f"Du valde {name}"
+        )
 
     def search_contacts(self):
         search = self.search_entry.get().lower()
+
         results = []
 
         for name, number in self.phonebook.items():
@@ -287,7 +385,11 @@ class PhonebookApp(ctk.CTk):
         self.display_contacts(sorted_contacts)
 
     def sort_za(self):
-        sorted_contacts = sorted(self.phonebook.items(), reverse=True)
+        sorted_contacts = sorted(
+            self.phonebook.items(),
+            reverse=True
+        )
+
         self.display_contacts(sorted_contacts)
 
     def open_add_window(self):
@@ -295,16 +397,25 @@ class PhonebookApp(ctk.CTk):
 
     def open_edit_window(self):
         if not self.selected_name:
-            messagebox.showwarning("Fel", "Välj en kontakt först.")
+            messagebox.showwarning(
+                "Fel",
+                "Välj en kontakt först."
+            )
+
             return
 
-        self.contact_window("Ändra kontakt", self.selected_name)
+        self.contact_window(
+            "Ändra kontakt",
+            self.selected_name
+        )
 
     def contact_window(self, title, old_name=None):
         window = ctk.CTkToplevel(self)
+
         window.title(title)
         window.geometry("400x330")
         window.configure(fg_color="#111827")
+
         window.grab_set()
 
         ctk.CTkLabel(
@@ -321,6 +432,7 @@ class PhonebookApp(ctk.CTk):
             placeholder_text="Namn",
             corner_radius=14
         )
+
         name_entry.pack(pady=10)
 
         def only_numbers(text):
@@ -337,28 +449,48 @@ class PhonebookApp(ctk.CTk):
             validate="key",
             validatecommand=(validate_command, "%P")
         )
+
         number_entry.pack(pady=10)
 
         if old_name:
             name_entry.insert(0, old_name)
-            number_entry.insert(0, self.phonebook[old_name])
+            number_entry.insert(
+                0,
+                self.phonebook[old_name]
+            )
 
         def save_contact():
             name = name_entry.get().strip().title()
             number = number_entry.get().strip()
 
             if not name or not number:
-                messagebox.showwarning("Fel", "Skriv både namn och telefonnummer.")
+                messagebox.showwarning(
+                    "Fel",
+                    "Skriv både namn och telefonnummer."
+                )
+
                 return
+
+            if name in self.phonebook and old_name != name:
+                replace = messagebox.askyesno(
+                    "Kontakten finns redan",
+                    f"{name} finns redan.\n\nVill du ersätta kontakten?"
+                )
+
+                if not replace:
+                    return
 
             if old_name and old_name != name:
                 del self.phonebook[old_name]
 
             self.phonebook[name] = number
+
             save_phonebook(self.phonebook)
 
             self.selected_name = name
+
             self.show_contacts()
+
             window.destroy()
 
         ctk.CTkButton(
@@ -374,7 +506,11 @@ class PhonebookApp(ctk.CTk):
 
     def remove_contact(self):
         if not self.selected_name:
-            messagebox.showwarning("Fel", "Välj en kontakt först.")
+            messagebox.showwarning(
+                "Fel",
+                "Välj en kontakt först."
+            )
+
             return
 
         answer = messagebox.askyesno(
@@ -384,11 +520,14 @@ class PhonebookApp(ctk.CTk):
 
         if answer:
             del self.phonebook[self.selected_name]
+
             save_phonebook(self.phonebook)
 
             self.selected_name = None
+
             self.show_contacts()
 
 
 app = PhonebookApp()
+
 app.mainloop()
