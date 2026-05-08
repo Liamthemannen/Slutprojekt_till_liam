@@ -73,6 +73,7 @@ class PhonebookApp(ctk.CTk):
             hover_color="#2A163B",
             command=self.destroy
         )
+
         self.exit_button.pack(
             side="bottom",
             pady=35,
@@ -275,10 +276,11 @@ class PhonebookApp(ctk.CTk):
         header = ctk.CTkFrame(
             self.contact_frame,
             fg_color="#1F2937",
-            height=50
+            height=50,
+            corner_radius=6
         )
 
-        header.pack(fill="x", pady=(0, 5))
+        header.pack(fill="x", pady=(0, 8), padx=8)
 
         ctk.CTkLabel(
             header,
@@ -286,61 +288,80 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 17, "bold"),
             width=350,
             anchor="w"
-        ).pack(side="left", padx=25)
+        ).pack(side="left", padx=25, pady=10)
 
         ctk.CTkLabel(
             header,
             text="Telefonnummer",
             font=("Arial", 17, "bold"),
             anchor="w"
-        ).pack(side="left", padx=25)
+        ).pack(side="left", padx=25, pady=10)
 
         count = 0
 
         for name, number in contacts:
             count += 1
 
-            row = ctk.CTkFrame(
+            is_selected = self.selected_name == name
+
+            outer_row = ctk.CTkFrame(
                 self.contact_frame,
-                height=70,
+                corner_radius=12,
+                fg_color="#D8B4FE" if is_selected else "#151B2E"
+            )
+
+            outer_row.pack(fill="x", pady=5, padx=10)
+
+            inner_row = ctk.CTkFrame(
+                outer_row,
+                height=62,
                 corner_radius=10,
                 fg_color="#111827"
             )
 
-            row.pack(fill="x", pady=4, padx=8)
+            inner_row.pack(
+                fill="x",
+                padx=2 if is_selected else 0,
+                pady=2 if is_selected else 0
+            )
 
-            row.bind(
+            outer_row.bind(
+                "<Button-1>",
+                lambda event, n=name: self.select_contact(n)
+            )
+
+            inner_row.bind(
                 "<Button-1>",
                 lambda event, n=name: self.select_contact(n)
             )
 
             icon = ctk.CTkLabel(
-                row,
+                inner_row,
                 text="👤",
-                font=("Arial", 26),
+                font=("Arial", 24),
                 width=60
             )
 
-            icon.pack(side="left", padx=(15, 5))
+            icon.pack(side="left", padx=(15, 5), pady=8)
 
             name_label = ctk.CTkLabel(
-                row,
+                inner_row,
                 text=name,
                 font=("Arial", 18),
                 width=300,
                 anchor="w"
             )
 
-            name_label.pack(side="left", padx=10)
+            name_label.pack(side="left", padx=10, pady=8)
 
             number_label = ctk.CTkLabel(
-                row,
+                inner_row,
                 text=number,
                 font=("Arial", 18),
                 anchor="w"
             )
 
-            number_label.pack(side="left", padx=30)
+            number_label.pack(side="left", padx=30, pady=8)
 
             icon.bind(
                 "<Button-1>",
@@ -363,11 +384,7 @@ class PhonebookApp(ctk.CTk):
 
     def select_contact(self, name):
         self.selected_name = name
-
-        messagebox.showinfo(
-            "Vald kontakt",
-            f"Du valde {name}"
-        )
+        self.display_contacts(self.phonebook.items())
 
     def search_contacts(self):
         search = self.search_entry.get().lower()
@@ -454,6 +471,7 @@ class PhonebookApp(ctk.CTk):
 
         if old_name:
             name_entry.insert(0, old_name)
+
             number_entry.insert(
                 0,
                 self.phonebook[old_name]
