@@ -1,10 +1,14 @@
 {
-    "Liam": "67676767",
-    "Kevin": "6767676767",
-    "Vidarr": "0767676767",
-    "August": "6767676767",
-    "Robin": "505",
-    "\u00c4ngla": "676767676767676767",
-    "Horny": "6767676767676767676",
-    "Tung Tung Tung Sacool": "4167"
+    "Liam": {
+        "number": "6767",
+        "category": "Kompis"
+    },
+    "Vidarr": {
+        "number": "676767",
+        "category": "Klasskompis"
+    },
+    "Ahmed": {
+        "number": "67676767",
+        "category": "Familj"
+    }
 }
