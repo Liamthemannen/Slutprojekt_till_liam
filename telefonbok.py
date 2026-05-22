@@ -1,6 +1,6 @@
 import json
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 
 FILE_NAME = "phonebook.json"
 SETTINGS_FILE = "settings.json"
@@ -82,6 +82,20 @@ class PhonebookApp(ctk.CTk):
         self.create_main_area()
 
         self.show_contacts()
+        
+    
+    def make_unique_name(self, name):
+        if name not in self.phonebook:
+            return name
+
+        number = 2
+        new_name = f"{name} ({number})"
+
+        while new_name in self.phonebook:
+            number += 1
+            new_name = f"{name} ({number})"
+
+        return new_name
 
     def create_sidebar(self):
         self.sidebar = ctk.CTkFrame(
@@ -696,15 +710,27 @@ class PhonebookApp(ctk.CTk):
                     "Skriv både namn och telefonnummer."
                 )
                 return
+            
+            
 
             if name in self.phonebook and old_name != name:
-                replace = messagebox.askyesno(
+                add_lastname = messagebox.askyesno(
                     "Kontakten finns redan",
-                    f"{name} finns redan.\n\nVill du ersätta kontakten?"
+                    f"{name} finns redan.\n\nVill du lägga till ett efternamn?"
                 )
 
-                if not replace:
-                    return
+            if add_lastname:
+                lastname = simpledialog.askstring(
+                    "Lägg till efternamn",
+                    "Skriv efternamn:"
+                )
+
+                if lastname:
+                    name = f"{name} {lastname.strip().title()}"
+                else:
+                    name = self.make_unique_name(name)
+            else:
+                name = self.make_unique_name(name)
 
             if old_name and old_name != name:
                 del self.phonebook[old_name]
