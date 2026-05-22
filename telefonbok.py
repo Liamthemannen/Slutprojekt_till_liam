@@ -44,9 +44,20 @@ def load_phonebook():
             for name, value in list(data.items()):
                 if isinstance(value, str):
                     data[name] = {
-                        "number": value,
+                        "numbers": [value],
+                        "email": "",
                         "category": "Övrig"
                     }
+
+                if "number" in data[name]:
+                    data[name]["numbers"] = [data[name]["number"]]
+                    del data[name]["number"]
+
+                if "numbers" not in data[name]:
+                    data[name]["numbers"] = []
+
+                if "email" not in data[name]:
+                    data[name]["email"] = ""
 
                 if "category" not in data[name]:
                     data[name]["category"] = "Övrig"
@@ -340,7 +351,7 @@ class PhonebookApp(ctk.CTk):
             for name, info in category_contacts:
                 count += 1
 
-                number = info["number"]
+                number = info["numbers"][0] if info["numbers"] else "Inget nummer"
                 category = info["category"]
                 is_selected = self.selected_name == name
 
@@ -411,7 +422,7 @@ class PhonebookApp(ctk.CTk):
 
     def select_contact(self, name):
         self.selected_name = name
-        self.display_contacts(self.phonebook.items())
+        self.show_contact_details(name)
 
     def search_contacts(self):
         if self.title_label.cget("text") == "Settings":
@@ -423,13 +434,82 @@ class PhonebookApp(ctk.CTk):
         for name, info in self.phonebook.items():
             if (
                 search in name.lower()
-                or search in info["number"]
+                or any(search in number for number in info["numbers"])
                 or search in info["category"].lower()
             ):
                 results.append((name, info))
 
         self.display_contacts(results)
 
+    def show_contact_details(self, name):
+        self.clear_contacts()
+        self.title_label.configure(text=name)
+
+        info = self.phonebook[name]
+
+        details_frame = ctk.CTkFrame(
+            self.contact_frame,
+            fg_color="#111827",
+            corner_radius=16
+        )
+        details_frame.pack(fill="x", padx=25, pady=25)
+
+        ctk.CTkLabel(
+            details_frame,
+            text=name,
+            font=("Arial", 32, "bold"),
+            text_color="#E84AAE"
+        ).pack(pady=(25, 15))
+
+        ctk.CTkLabel(
+            details_frame,
+            text=f"Kategori: {info['category']}",
+            font=("Arial", 20),
+            text_color="white"
+        ).pack(pady=8)
+
+        ctk.CTkLabel(
+            details_frame,
+            text="Telefonnummer",
+            font=("Arial", 24, "bold"),
+            text_color="#E84AAE"
+        ).pack(pady=(25, 10))
+
+        for number in info["numbers"]:
+            ctk.CTkLabel(
+                details_frame,
+                text=number,
+                font=("Arial", 20),
+                text_color="white"
+            ).pack(pady=4)
+
+        ctk.CTkLabel(
+            details_frame,
+            text="Email",
+            font=("Arial", 24, "bold"),
+            text_color="#E84AAE"
+        ).pack(pady=(25, 10))
+
+        email_text = info["email"] if info["email"] else "Ingen email"
+
+        ctk.CTkLabel(
+            details_frame,
+            text=email_text,
+            font=("Arial", 20),
+            text_color="white"
+        ).pack(pady=4)
+
+        back_button = ctk.CTkButton(
+            details_frame,
+            text="Tillbaka",
+            height=45,
+            corner_radius=14,
+            fg_color="#B832FF",
+            hover_color="#8E24AA",
+            font=("Arial", 17, "bold"),
+            command=self.show_contacts
+        )
+        back_button.pack(pady=30)
     def sort_az(self):
         if self.title_label.cget("text") == "Settings":
             return
@@ -627,7 +707,7 @@ class PhonebookApp(ctk.CTk):
         window = ctk.CTkToplevel(self)
 
         window.title(title)
-        window.geometry("400x430")
+        window.geometry("450x600")
         window.configure(fg_color="#111827")
         window.grab_set()
 
@@ -636,7 +716,7 @@ class PhonebookApp(ctk.CTk):
             text=title,
             font=("Arial", 28, "bold"),
             text_color="#E84AAE"
-        ).pack(pady=(30, 20))
+        ).pack(pady=(25, 15))
 
         ctk.CTkLabel(
             window,
@@ -647,7 +727,7 @@ class PhonebookApp(ctk.CTk):
 
         name_entry = ctk.CTkEntry(
             window,
-            width=300,
+            width=330,
             height=45,
             placeholder_text="Skriv namn",
             corner_radius=14
@@ -661,21 +741,70 @@ class PhonebookApp(ctk.CTk):
             text_color="white"
         ).pack()
 
+        numbers_frame = ctk.CTkFrame(
+            window,
+            fg_color="transparent"
+        )
+        numbers_frame.pack()
+
+        number_entries = []
+
         def only_numbers(text):
             return text.isdigit() or text == ""
 
         validate_command = window.register(only_numbers)
 
-        number_entry = ctk.CTkEntry(
+        def add_number_field(number=""):
+            row = ctk.CTkFrame(
+                numbers_frame,
+                fg_color="transparent"
+            )
+            row.pack(pady=5)
+
+            entry = ctk.CTkEntry(
+                row,
+                width=270,
+                height=45,
+                placeholder_text="Skriv telefonnummer",
+                corner_radius=14,
+                validate="key",
+                validatecommand=(validate_command, "%P")
+            )
+            entry.pack(side="left", padx=(0, 8))
+
+            entry.insert(0, number)
+            number_entries.append(entry)
+
+            plus_button = ctk.CTkButton(
+                row,
+                text="+",
+                width=45,
+                height=45,
+                corner_radius=14,
+                fg_color="#22C55E",
+                hover_color="#16A34A",
+                font=("Arial", 22, "bold"),
+                command=lambda: add_number_field()
+            )
+            plus_button.pack(side="left")
+
+        add_number_field()
+
+        ctk.CTkLabel(
             window,
-            width=300,
+            text="Email (frivillig)",
+            font=("Arial", 16, "bold"),
+            text_color="white"
+        ).pack(pady=(15, 0))
+
+        email_entry = ctk.CTkEntry(
+            window,
+            width=330,
             height=45,
-            placeholder_text="Skriv telefonnummer",
-            corner_radius=14,
-            validate="key",
-            validatecommand=(validate_command, "%P")
+            placeholder_text="Skriv email",
+            corner_radius=14
         )
-        number_entry.pack(pady=(5, 15))
+        email_entry.pack(pady=(5, 15))
 
         ctk.CTkLabel(
             window,
@@ -686,7 +815,7 @@ class PhonebookApp(ctk.CTk):
 
         category_menu = ctk.CTkOptionMenu(
             window,
-            width=300,
+            width=330,
             height=45,
             corner_radius=14,
             values=self.settings["categories"]
@@ -696,22 +825,37 @@ class PhonebookApp(ctk.CTk):
 
         if old_name:
             name_entry.insert(0, old_name)
-            number_entry.insert(0, self.phonebook[old_name]["number"])
+
+            for widget in numbers_frame.winfo_children():
+                widget.destroy()
+
+            number_entries.clear()
+
+            for number in self.phonebook[old_name]["numbers"]:
+                add_number_field(number)
+
+            email_entry.insert(0, self.phonebook[old_name]["email"])
             category_menu.set(self.phonebook[old_name]["category"])
 
         def save_contact():
             name = name_entry.get().strip().title()
-            number = number_entry.get().strip()
+            email = email_entry.get().strip()
             category = category_menu.get()
 
-            if not name or not number:
+            numbers = []
+
+            for entry in number_entries:
+                number = entry.get().strip()
+
+                if number:
+                    numbers.append(number)
+
+            if not name or not numbers:
                 messagebox.showwarning(
                     "Fel",
-                    "Skriv både namn och telefonnummer."
+                    "Skriv namn och minst ett telefonnummer."
                 )
                 return
-            
-            
 
             if name in self.phonebook and old_name != name:
                 add_lastname = messagebox.askyesno(
@@ -719,24 +863,25 @@ class PhonebookApp(ctk.CTk):
                     f"{name} finns redan.\n\nVill du lägga till ett efternamn?"
                 )
 
-            if add_lastname:
-                lastname = simpledialog.askstring(
-                    "Lägg till efternamn",
-                    "Skriv efternamn:"
-                )
+                if add_lastname:
+                    lastname = ctk.CTkInputDialog(
+                        text="Skriv efternamn:",
+                        title="Lägg till efternamn"
+                    ).get_input()
 
-                if lastname:
-                    name = f"{name} {lastname.strip().title()}"
+                    if lastname:
+                        name = f"{name} {lastname.strip().title()}"
+                    else:
+                        name = self.make_unique_name(name)
                 else:
                     name = self.make_unique_name(name)
-            else:
-                name = self.make_unique_name(name)
 
             if old_name and old_name != name:
                 del self.phonebook[old_name]
 
             self.phonebook[name] = {
-                "number": number,
+                "numbers": numbers,
+                "email": email,
                 "category": category
             }
 
@@ -756,7 +901,7 @@ class PhonebookApp(ctk.CTk):
             hover_color="#8E24AA",
             font=("Arial", 17, "bold"),
             command=save_contact
-        ).pack(pady=25)
+        ).pack(pady=20)
 
     def remove_contact(self):
         if not self.selected_name:

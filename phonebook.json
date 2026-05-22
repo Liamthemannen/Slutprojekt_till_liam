@@ -1,22 +1,52 @@
 {
     "Liam": {
-        "number": "6767",
-        "category": "Kompis"
+        "category": "Kompis",
+        "numbers": [
+            "6767"
+        ],
+        "email": ""
     },
     "Vidarr": {
-        "number": "676767",
-        "category": "\u00d6vrig"
+        "category": "\u00d6vrig",
+        "numbers": [
+            "676767"
+        ],
+        "email": ""
     },
     "Ahmed": {
-        "number": "67676767",
-        "category": "Familj"
+        "category": "Familj",
+        "numbers": [
+            "67676767"
+        ],
+        "email": ""
     },
     "Vidarr (2)": {
-        "number": "6767676767",
-        "category": "\u00d6vrig"
+        "category": "\u00d6vrig",
+        "numbers": [
+            "6767676767"
+        ],
+        "email": ""
     },
     "Vidarr Judeberg": {
-        "number": "676767",
+        "category": "\u00d6vrig",
+        "numbers": [
+            "676767"
+        ],
+        "email": ""
+    },
+    "Liam Brundin": {
+        "numbers": [
+            "0723215088",
+            "0735073988"
+        ],
+        "email": "liam.bj@gmail.com",
+        "category": "\u00d6vrig"
+    },
+    "Vidarr (3)": {
+        "numbers": [
+            "6776"
+        ],
+        "email": "netnahulover@gmail.org",
         "category": "\u00d6vrig"
     }
 }
