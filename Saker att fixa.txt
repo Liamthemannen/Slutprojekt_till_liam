@@ -1,6 +1,6 @@
 1. Stor bokstav i början (Kunna stänga av i settings) (Klar)
 2. Göra olika kategorier som man kan välja på personen (Kunna stänga av i settings) (Klar)
-3. Ska kunna finnas flera med samma namn (Ska komma upp prompt om man vill lägga till efternamn)
-4. Ska kunna lägga till flera nummer 
-5. Ska kunna lägga till e-mail och även flera
-6. Ska kunna lägga till flera olika kategorier.
+3. Ska kunna finnas flera med samma namn (Ska komma upp prompt om man vill lägga till efternamn) (Klar)
+4. Ska kunna lägga till flera nummer (Klar, ska bara lägga till scroll)
+5. Ska kunna lägga till e-mail och även flera (Klar)
+6. Ska kunna lägga till flera olika kategorier. (Klar, ska bara kunna ta bort kategorier)
