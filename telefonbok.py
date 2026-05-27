@@ -605,14 +605,17 @@ class PhonebookApp(ctk.CTk):
         sorted_contacts = sorted(self.phonebook.items(), reverse=True)
         self.display_contacts(sorted_contacts)
 
-    
+    # Visar inställningar
     def show_settings(self):
+
+        # Dölj knappar
         self.hide_contact_buttons()
         self.search_entry.delete(0, "end")
         self.clear_contacts()
 
-        self.title_label.configure(text="Settings")
+        self.title_label.configure(text="Settings") # Ändrar titel till settings
 
+        # Gör en "frame" för settings
         settings_frame = ctk.CTkFrame(
             self.contact_frame,
             fg_color="#111827",
@@ -620,6 +623,7 @@ class PhonebookApp(ctk.CTk):
         )
         settings_frame.pack(fill="x", padx=25, pady=25)
 
+        # Ändrar titel till Settings
         ctk.CTkLabel(
             settings_frame,
             text="Inställningar",
@@ -635,11 +639,13 @@ class PhonebookApp(ctk.CTk):
         )
         self.category_switch.pack(pady=15)
 
+        # Kollar om visa kategorier är på eller inte
         if self.settings["show_categories"]:
             self.category_switch.select()
         else:
             self.category_switch.deselect()
 
+        # Knapp för lägga till egen kategori
         add_category_button = ctk.CTkButton(
             settings_frame,
             text="+ Lägg till kategori",
@@ -652,6 +658,7 @@ class PhonebookApp(ctk.CTk):
         )
         add_category_button.pack(pady=15, padx=35, fill="x")
 
+        # Text som visar "Kategorier"
         ctk.CTkLabel(
             settings_frame,
             text="Kategorier",
@@ -666,8 +673,9 @@ class PhonebookApp(ctk.CTk):
         )
         self.category_list_frame.pack(fill="x", padx=35, pady=10)
 
-        self.show_category_list()
+        self.show_category_list() # Visar alla kategorier
 
+        # Knapp för spara sina val i inställningsmenyn
         save_button = ctk.CTkButton(
             settings_frame,
             text="Spara",
@@ -682,10 +690,13 @@ class PhonebookApp(ctk.CTk):
 
         self.total_label.configure(text="")
 
+    # Visar alla kategorier i settings
     def show_category_list(self):
+        # Rensar gamla kategorier från listan
         for widget in self.category_list_frame.winfo_children():
             widget.destroy()
 
+        #Går igenom alla kategorier och skapar en ny rad för kategorin
         for category in self.settings["categories"]:
             row = ctk.CTkFrame(
                 self.category_list_frame,
@@ -701,6 +712,7 @@ class PhonebookApp(ctk.CTk):
                 anchor="w"
             ).pack(side="left", fill="x", expand=True)
 
+            # Kollar att kategorin inte är standard-kategori och kan dås ta bort
             if category != "Övrig":
                 ctk.CTkButton(
                     row,
@@ -713,9 +725,11 @@ class PhonebookApp(ctk.CTk):
                     command=lambda c=category: self.remove_category(c)
                 ).pack(side="right", padx=5)
 
+    # Gör ett nytt fönster för att kunna göra ny kategori
     def open_add_category_window(self):
         window = ctk.CTkToplevel(self)
 
+        # Inställningar
         window.title("Lägg till kategori")
         window.geometry("400x250")
         window.configure(fg_color="#111827")
@@ -728,6 +742,7 @@ class PhonebookApp(ctk.CTk):
             text_color="#E84AAE"
         ).pack(pady=(30, 25))
 
+        # Ruta där användaren skriver in svar
         category_entry = ctk.CTkEntry(
             window,
             width=300,
@@ -737,9 +752,11 @@ class PhonebookApp(ctk.CTk):
         )
         category_entry.pack(pady=10)
 
+        # Sparar kategorin
         def save_category():
-            category = category_entry.get().strip().title()
+            category = category_entry.get().strip().title() # Sparar texten från avändarens input
 
+            # Dubbelkollar att man har skrivit in något i kategori
             if not category:
                 messagebox.showwarning(
                     "Fel",
@@ -747,6 +764,7 @@ class PhonebookApp(ctk.CTk):
                 )
                 return
 
+            # Kontrollerar om kategorin redan finns
             if category in self.settings["categories"]:
                 messagebox.showwarning(
                     "Fel",
@@ -757,8 +775,9 @@ class PhonebookApp(ctk.CTk):
             self.settings["categories"].append(category)
             self.show_category_list()
 
-            window.destroy()
+            window.destroy() # Stänger popup-fönstret
 
+        # Knapp för att lägga till kategorin
         ctk.CTkButton(
             window,
             text="Lägg till",
