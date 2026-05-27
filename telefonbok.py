@@ -7,8 +7,10 @@ SETTINGS_FILE = "settings.json"
 
 DEFAULT_CATEGORIES = ["Övrig", "Kompis", "Familj", "Kollega"]
 
-
+# Läser inställningar från JSOn-fil
 def load_settings():
+
+    # Försöker läsa JSON-filen och skapar standardkategorier ifall det ej finns
     try:
         with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
@@ -23,24 +25,25 @@ def load_settings():
                 settings["categories"].insert(0, "Övrig")
 
             return settings
-
+    # Retunerar standardiställningar
     except FileNotFoundError:
         return {
             "show_categories": True,
             "categories": DEFAULT_CATEGORIES
         }
 
-
+# Sparar inställningarna
 def save_settings(settings):
     with open(SETTINGS_FILE, "w") as file:
         json.dump(settings, file, indent=4)
 
-
+#Läser in kontakterna från JSON-fil
 def load_phonebook():
     try:
         with open(FILE_NAME, "r") as file:
             data = json.load(file)
 
+            #Går igenom alla kontakter och gör om det till rättstruktur i JSON
             for name, value in list(data.items()):
                 if isinstance(value, str):
                     data[name] = {
@@ -49,10 +52,12 @@ def load_phonebook():
                         "category": "Övrig"
                     }
 
+                # Byter ut gamla "keyn" till nya
                 if "number" in data[name]:
                     data[name]["numbers"] = [data[name]["number"]]
                     del data[name]["number"]
 
+                # Skapar tomma datatyper ifall det saknas
                 if "numbers" not in data[name]:
                     data[name]["numbers"] = []
 
@@ -64,51 +69,64 @@ def load_phonebook():
 
             return data
 
+    # Ifall JSON-filen inte finns så retuneras en tom dictonary
     except FileNotFoundError:
         return {}
 
-
+# Sparar kontakterna
 def save_phonebook(phonebook):
     with open(FILE_NAME, "w") as file:
         json.dump(phonebook, file, indent=4)
 
-
+#Klass för vår telefonbok
 class PhonebookApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        # Läser in all data
         self.settings = load_settings()
         self.phonebook = load_phonebook()
         self.selected_name = None
 
+        # Appens utseende
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
 
+        # Skapar huvudmeny
         self.title("Telefonbok")
         self.geometry("1100x700")
         self.minsize(900, 600)
         self.configure(fg_color="#0B0F1E")
 
+        # Skapar menyn till sidan av huvudmenyn
         self.create_sidebar()
         self.create_main_area()
 
+        # Visar kontakterna
         self.show_contacts()
         
-    
+    # Skapar nytt namn ifall kontakten redan finns
     def make_unique_name(self, name):
+
+        # Retunerar vanliga namnet
         if name not in self.phonebook:
             return name
 
+        # Start number, tex finns det 2 st Liam blir det Liam (2)
         number = 2
         new_name = f"{name} ({number})"
 
+        # Ökar numret tills det blir unikt
         while new_name in self.phonebook:
             number += 1
             new_name = f"{name} ({number})"
 
         return new_name
 
+    # skapar "sidebar" till programmet
     def create_sidebar(self):
+
+        # skapar sidobarens utseende
         self.sidebar = ctk.CTkFrame(
             self,
             width=250,
@@ -117,6 +135,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.sidebar.pack(side="left", fill="y")
 
+        # Logga högst upp med titel
         title = ctk.CTkLabel(
             self.sidebar,
             text="☎ Telefonbok",
@@ -125,12 +144,14 @@ class PhonebookApp(ctk.CTk):
         )
         title.pack(pady=(35, 40))
 
+        # Skapar de specifika sidoknapparna
         self.nav_button("Kontakter", self.show_contacts)
         self.nav_button("Lägg till", self.open_add_window)
         self.nav_button("Settings", self.show_settings)
         self.nav_button("Sortera A-Z", self.sort_az)
         self.nav_button("Sortera Z-A", self.sort_za)
 
+        # Avsluta knapp
         self.exit_button = ctk.CTkButton(
             self.sidebar,
             text="Avsluta",
@@ -144,6 +165,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.exit_button.pack(side="bottom", pady=35, padx=25, fill="x")
 
+    # Skapar en generell knapp i "Sidemenu"
     def nav_button(self, text, command):
         button = ctk.CTkButton(
             self.sidebar,
@@ -154,11 +176,18 @@ class PhonebookApp(ctk.CTk):
             hover_color="#6C2DC7",
             anchor="w",
             font=("Arial", 18),
+
+            #Funktionen som körs när knappen klickas
             command=command
         )
+
+        #Placerar knappen
         button.pack(pady=8, padx=25, fill="x")
 
+    # Skapar huvudytan
     def create_main_area(self):
+
+        # Skapar ramen
         self.main = ctk.CTkFrame(
             self,
             corner_radius=22,
@@ -174,9 +203,11 @@ class PhonebookApp(ctk.CTk):
             pady=25
         )
 
+        # Skapar ramen högst upp
         header_frame = ctk.CTkFrame(self.main, fg_color="transparent")
         header_frame.pack(fill="x", padx=40, pady=(35, 10))
 
+        # Sidans titel
         self.title_label = ctk.CTkLabel(
             header_frame,
             text="Kontakter",
@@ -185,6 +216,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.title_label.pack(side="left")
 
+        # Ruta för sökakontakter
         self.search_entry = ctk.CTkEntry(
             header_frame,
             width=320,
@@ -196,11 +228,15 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 16)
         )
         self.search_entry.pack(side="right")
+
+        # Gör så sökningen fungerar
         self.search_entry.bind("<KeyRelease>", lambda event: self.search_contacts())
 
+        # Frame för knapparna
         self.button_frame = ctk.CTkFrame(self.main, fg_color="transparent")
         self.button_frame.pack(fill="x", padx=40, pady=25)
 
+        # Knapp för lägga till kontakt
         self.add_button = ctk.CTkButton(
             self.button_frame,
             text="+ Lägg till",
@@ -213,6 +249,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.add_button.pack(side="left", expand=True, fill="x", padx=8)
 
+        # Knapp för ta bort kontakt
         self.remove_button = ctk.CTkButton(
             self.button_frame,
             text="Ta bort",
@@ -225,6 +262,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.remove_button.pack(side="left", expand=True, fill="x", padx=8)
 
+        # Knapp för ändra kontakt
         self.edit_button = ctk.CTkButton(
             self.button_frame,
             text="Ändra",
@@ -237,6 +275,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.edit_button.pack(side="left", expand=True, fill="x", padx=8)
 
+        # Knapp för uppdatera listan
         self.update_button = ctk.CTkButton(
             self.button_frame,
             text="Uppdatera",
@@ -249,6 +288,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.update_button.pack(side="left", expand=True, fill="x", padx=8)
 
+        # Skroll för kontakter ifall alla inte får plats
         self.contact_frame = ctk.CTkScrollableFrame(
             self.main,
             fg_color="#151B2E",
@@ -258,6 +298,7 @@ class PhonebookApp(ctk.CTk):
         )
         self.contact_frame.pack(fill="both", expand=True, padx=40, pady=(5, 20))
 
+        # Text som visar antal kontakter
         self.total_label = ctk.CTkLabel(
             self.main,
             text="Totalt: 0 kontakter",
@@ -266,33 +307,40 @@ class PhonebookApp(ctk.CTk):
         )
         self.total_label.pack(pady=(0, 25))
 
+    # Funktion som gömemr kontakterna
     def hide_contact_buttons(self):
         self.button_frame.pack_forget()
 
+    # FUnktion som visar kontakterna
     def show_contact_buttons(self):
         self.button_frame.pack(fill="x", padx=40, pady=25)
 
+    # Rensar alla kontakter
     def clear_contacts(self):
         for widget in self.contact_frame.winfo_children():
             widget.destroy()
 
+    # Visar alla i telefonboken
     def show_contacts(self):
         self.show_contact_buttons()
         self.title_label.configure(text="Kontakter")
         self.search_entry.delete(0, "end")
         self.display_contacts(self.phonebook.items())
 
+    # Visar kontakterna i kontaktlistan 
     def display_contacts(self, contacts):
         self.clear_contacts()
 
         contacts = list(contacts)
         count = 0
 
+        # Om man satt på kategorier i settings, ska det visas annars inte
         if self.settings["show_categories"]:
             categories_to_show = self.settings["categories"]
         else:
             categories_to_show = ["Alla kontakter"]
 
+        # Lägger till kontakten beroende på om kategorier är på eller inte
         for category in categories_to_show:
             category_contacts = []
 
@@ -306,6 +354,7 @@ class PhonebookApp(ctk.CTk):
             if not category_contacts:
                 continue
 
+            # Visar kategoriens namn
             if self.settings["show_categories"]:
                 category_label = ctk.CTkLabel(
                     self.contact_frame,
@@ -316,6 +365,7 @@ class PhonebookApp(ctk.CTk):
                 )
                 category_label.pack(fill="x", padx=15, pady=(20, 8))
 
+             # Skapar rubrikrad
             header = ctk.CTkFrame(
                 self.contact_frame,
                 fg_color="#1F2937",
@@ -324,6 +374,7 @@ class PhonebookApp(ctk.CTk):
             )
             header.pack(fill="x", pady=(0, 8), padx=8)
 
+            # Rubrik för namn
             ctk.CTkLabel(
                 header,
                 text="Namn",
@@ -332,6 +383,7 @@ class PhonebookApp(ctk.CTk):
                 anchor="w"
             ).pack(side="left", padx=25, pady=10)
 
+             # Rubrik för telefonnummer
             ctk.CTkLabel(
                 header,
                 text="Telefonnummer",
@@ -340,6 +392,7 @@ class PhonebookApp(ctk.CTk):
                 anchor="w"
             ).pack(side="left", padx=25, pady=10)
 
+             # Rubrik för kategori
             if self.settings["show_categories"]:
                 ctk.CTkLabel(
                     header,
@@ -348,6 +401,7 @@ class PhonebookApp(ctk.CTk):
                     anchor="w"
                 ).pack(side="left", padx=25, pady=10)
 
+            # Skapar en ny rad för varje kontakt som finns
             for name, info in category_contacts:
                 count += 1
 
