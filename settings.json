@@ -1,10 +1,8 @@
 {
-    "show_categories": false,
+    "show_categories": true,
     "categories": [
         "\u00d6vrig",
         "Kompis",
-        "Familj",
-        "Kollega",
-        "Klasskompis"
+        "Kollega"
     ]
 }
