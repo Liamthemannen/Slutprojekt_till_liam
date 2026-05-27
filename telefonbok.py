@@ -605,13 +605,31 @@ class PhonebookApp(ctk.CTk):
             widget.destroy()
 
         for category in self.settings["categories"]:
-            ctk.CTkLabel(
+            row = ctk.CTkFrame(
                 self.category_list_frame,
+                fg_color="transparent"
+            )
+            row.pack(fill="x", padx=15, pady=6)
+
+            ctk.CTkLabel(
+                row,
                 text=f"• {category}",
                 font=("Arial", 18),
                 text_color="white",
                 anchor="w"
-            ).pack(fill="x", padx=20, pady=6)
+            ).pack(side="left", fill="x", expand=True)
+
+            if category != "Övrig":
+                ctk.CTkButton(
+                    row,
+                    text="Ta bort",
+                    width=90,
+                    height=35,
+                    corner_radius=10,
+                    fg_color="#F43F5E",
+                    hover_color="#BE123C",
+                    command=lambda c=category: self.remove_category(c)
+                ).pack(side="right", padx=5)
 
     def open_add_category_window(self):
         window = ctk.CTkToplevel(self)
@@ -669,6 +687,26 @@ class PhonebookApp(ctk.CTk):
             font=("Arial", 17, "bold"),
             command=save_category
         ).pack(pady=25)
+        
+    def remove_category(self, category):
+        answer = messagebox.askyesno(
+            "Ta bort kategori",
+            f"Vill du ta bort kategorin {category}?\n\nAlla kontakter i den kategorin flyttas till Övrig."
+        )
+
+        if not answer:
+            return
+
+        self.settings["categories"].remove(category)
+
+        for name, info in self.phonebook.items():
+            if info["category"] == category:
+                info["category"] = "Övrig"
+
+        save_phonebook(self.phonebook)
+        save_settings(self.settings)
+
+        self.show_category_list()
 
     def save_settings_menu(self):
         answer = messagebox.askyesno(
@@ -711,22 +749,29 @@ class PhonebookApp(ctk.CTk):
         window.configure(fg_color="#111827")
         window.grab_set()
 
-        ctk.CTkLabel(
+        scroll_frame = ctk.CTkScrollableFrame(
             window,
+            fg_color="#111827",
+            corner_radius=0
+        )
+        scroll_frame.pack(fill="both", expand=True)
+
+        ctk.CTkLabel(
+            scroll_frame,
             text=title,
             font=("Arial", 28, "bold"),
             text_color="#E84AAE"
         ).pack(pady=(25, 15))
 
         ctk.CTkLabel(
-            window,
+            scroll_frame,
             text="Namn",
             font=("Arial", 16, "bold"),
             text_color="white"
         ).pack()
 
         name_entry = ctk.CTkEntry(
-            window,
+            scroll_frame,
             width=330,
             height=45,
             placeholder_text="Skriv namn",
@@ -735,16 +780,13 @@ class PhonebookApp(ctk.CTk):
         name_entry.pack(pady=(5, 15))
 
         ctk.CTkLabel(
-            window,
+            scroll_frame,
             text="Telefonnummer",
             font=("Arial", 16, "bold"),
             text_color="white"
         ).pack()
 
-        numbers_frame = ctk.CTkFrame(
-            window,
-            fg_color="transparent"
-        )
+        numbers_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent")
         numbers_frame.pack()
 
         number_entries = []
@@ -755,10 +797,7 @@ class PhonebookApp(ctk.CTk):
         validate_command = window.register(only_numbers)
 
         def add_number_field(number=""):
-            row = ctk.CTkFrame(
-                numbers_frame,
-                fg_color="transparent"
-            )
+            row = ctk.CTkFrame(numbers_frame, fg_color="transparent")
             row.pack(pady=5)
 
             entry = ctk.CTkEntry(
@@ -771,8 +810,8 @@ class PhonebookApp(ctk.CTk):
                 validatecommand=(validate_command, "%P")
             )
             entry.pack(side="left", padx=(0, 8))
-
             entry.insert(0, number)
+
             number_entries.append(entry)
 
             plus_button = ctk.CTkButton(
@@ -791,14 +830,14 @@ class PhonebookApp(ctk.CTk):
         add_number_field()
 
         ctk.CTkLabel(
-            window,
+            scroll_frame,
             text="Email (frivillig)",
             font=("Arial", 16, "bold"),
             text_color="white"
         ).pack(pady=(15, 0))
 
         email_entry = ctk.CTkEntry(
-            window,
+            scroll_frame,
             width=330,
             height=45,
             placeholder_text="Skriv email",
@@ -807,14 +846,14 @@ class PhonebookApp(ctk.CTk):
         email_entry.pack(pady=(5, 15))
 
         ctk.CTkLabel(
-            window,
+            scroll_frame,
             text="Kategori (frivillig)",
             font=("Arial", 16, "bold"),
             text_color="white"
         ).pack()
 
         category_menu = ctk.CTkOptionMenu(
-            window,
+            scroll_frame,
             width=330,
             height=45,
             corner_radius=14,
@@ -857,25 +896,6 @@ class PhonebookApp(ctk.CTk):
                 )
                 return
 
-            if name in self.phonebook and old_name != name:
-                add_lastname = messagebox.askyesno(
-                    "Kontakten finns redan",
-                    f"{name} finns redan.\n\nVill du lägga till ett efternamn?"
-                )
-
-                if add_lastname:
-                    lastname = ctk.CTkInputDialog(
-                        text="Skriv efternamn:",
-                        title="Lägg till efternamn"
-                    ).get_input()
-
-                    if lastname:
-                        name = f"{name} {lastname.strip().title()}"
-                    else:
-                        name = self.make_unique_name(name)
-                else:
-                    name = self.make_unique_name(name)
-
             if old_name and old_name != name:
                 del self.phonebook[old_name]
 
@@ -893,7 +913,7 @@ class PhonebookApp(ctk.CTk):
             window.destroy()
 
         ctk.CTkButton(
-            window,
+            scroll_frame,
             text="Spara",
             height=45,
             corner_radius=14,
@@ -901,7 +921,7 @@ class PhonebookApp(ctk.CTk):
             hover_color="#8E24AA",
             font=("Arial", 17, "bold"),
             command=save_contact
-        ).pack(pady=20)
+        ).pack(pady=25)
 
     def remove_contact(self):
         if not self.selected_name:
