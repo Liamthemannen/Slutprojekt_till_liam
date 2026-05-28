@@ -789,38 +789,44 @@ class PhonebookApp(ctk.CTk):
             command=save_category
         ).pack(pady=25)
         
+    # Funktion för ta bort kategori
     def remove_category(self, category):
         answer = messagebox.askyesno(
             "Ta bort kategori",
             f"Vill du ta bort kategorin {category}?\n\nAlla kontakter i den kategorin flyttas till Övrig."
         )
 
+        # Om personen inte vill ta bort, kör den inte koden
         if not answer:
             return
 
         self.settings["categories"].remove(category)
 
+        # Går igenom alla kontakter för se vilka som använder just den, om personen använder den kontakten flyttas den till övrig
         for name, info in self.phonebook.items():
             if info["category"] == category:
                 info["category"] = "Övrig"
 
+        # Sparar ändringarna
         save_phonebook(self.phonebook)
         save_settings(self.settings)
 
         self.show_category_list()
 
+    # Funktion för att spara inställningarna
     def save_settings_menu(self):
         answer = messagebox.askyesno(
             "Spara inställningar",
             "Är du säker på att du vill spara inställningarna?"
         )
 
+        # IFall personen inte vill spara, så ignonerar den koden
         if not answer:
             return
+        
+        self.settings["show_categories"] = bool(self.category_switch.get()) # Sparar ifall kategorier ska synas
 
-        self.settings["show_categories"] = bool(self.category_switch.get())
-
-        save_settings(self.settings)
+        save_settings(self.settings) 
 
         messagebox.showinfo(
             "Sparat",
@@ -829,10 +835,13 @@ class PhonebookApp(ctk.CTk):
 
         self.show_contacts()
 
+    # Öppnar fönster för lägga till kontakt
     def open_add_window(self):
         self.contact_window("Lägg till kontakt")
 
+    # öppnar fönster för att ändra kontakt
     def open_edit_window(self):
+        # Kollar om en kontakt är vald
         if not self.selected_name:
             messagebox.showwarning(
                 "Fel",
@@ -840,7 +849,7 @@ class PhonebookApp(ctk.CTk):
             )
             return
 
-        self.contact_window("Ändra kontakt", self.selected_name)
+        self.contact_window("Ändra kontakt", self.selected_name) # Öppnar kontakjtfönstret med vald kontakt
 
     def contact_window(self, title, old_name=None):
         window = ctk.CTkToplevel(self)
