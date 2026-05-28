@@ -5,7 +5,7 @@ from tkinter import messagebox, simpledialog
 FILE_NAME = "phonebook.json"
 SETTINGS_FILE = "settings.json"
 
-DEFAULT_CATEGORIES = ["Övrig", "Kompis", "Familj", "Kollega"]
+DEFAULT_CATEGORIES = ["Övrig", "Kompis", "Familj", "Kollega"] # Standard-kategoirerna
 
 # Läser inställningar från JSOn-fil
 def load_settings():
@@ -851,7 +851,9 @@ class PhonebookApp(ctk.CTk):
 
         self.contact_window("Ändra kontakt", self.selected_name) # Öppnar kontakjtfönstret med vald kontakt
 
+    # Öppnar fönster för kontakterna
     def contact_window(self, title, old_name=None):
+        # Skapar fönster med diverse inställningar
         window = ctk.CTkToplevel(self)
 
         window.title(title)
@@ -859,6 +861,7 @@ class PhonebookApp(ctk.CTk):
         window.configure(fg_color="#111827")
         window.grab_set()
 
+        # Scrollbar för om det är för mykcet innehåll för att få plats
         scroll_frame = ctk.CTkScrollableFrame(
             window,
             fg_color="#111827",
@@ -866,6 +869,7 @@ class PhonebookApp(ctk.CTk):
         )
         scroll_frame.pack(fill="both", expand=True)
 
+        # Titel i fönstret
         ctk.CTkLabel(
             scroll_frame,
             text=title,
@@ -873,6 +877,7 @@ class PhonebookApp(ctk.CTk):
             text_color="#E84AAE"
         ).pack(pady=(25, 15))
 
+        # Rubrik för namn
         ctk.CTkLabel(
             scroll_frame,
             text="Namn",
@@ -880,6 +885,7 @@ class PhonebookApp(ctk.CTk):
             text_color="white"
         ).pack()
 
+        # Input från användaren om namn
         name_entry = ctk.CTkEntry(
             scroll_frame,
             width=330,
@@ -889,6 +895,7 @@ class PhonebookApp(ctk.CTk):
         )
         name_entry.pack(pady=(5, 15))
 
+         # Rubrik för telefonnummer
         ctk.CTkLabel(
             scroll_frame,
             text="Telefonnummer",
@@ -896,16 +903,18 @@ class PhonebookApp(ctk.CTk):
             text_color="white"
         ).pack()
 
-        numbers_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent")
+        numbers_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent") # Ram för flera telefonnummer
         numbers_frame.pack()
 
-        number_entries = []
+        number_entries = [] # Sparar alla nummer
 
+        # Funktion som bara tillåter siffror
         def only_numbers(text):
             return text.isdigit() or text == ""
 
         validate_command = window.register(only_numbers)
 
+        # Gör ett nytt nummer-input
         def add_number_field(number=""):
             row = ctk.CTkFrame(numbers_frame, fg_color="transparent")
             row.pack(pady=5)
@@ -924,6 +933,7 @@ class PhonebookApp(ctk.CTk):
 
             number_entries.append(entry)
 
+            # Knapp för att lägga till fler nummerfält
             plus_button = ctk.CTkButton(
                 row,
                 text="+",
@@ -939,6 +949,7 @@ class PhonebookApp(ctk.CTk):
 
         add_number_field()
 
+        # Rubrik för email
         ctk.CTkLabel(
             scroll_frame,
             text="Email (frivillig)",
@@ -946,6 +957,7 @@ class PhonebookApp(ctk.CTk):
             text_color="white"
         ).pack(pady=(15, 0))
 
+        # Användarens input om mail
         email_entry = ctk.CTkEntry(
             scroll_frame,
             width=330,
@@ -955,6 +967,7 @@ class PhonebookApp(ctk.CTk):
         )
         email_entry.pack(pady=(5, 15))
 
+        # Text som förklarar att kategori är frivilligt
         ctk.CTkLabel(
             scroll_frame,
             text="Kategori (frivillig)",
@@ -962,6 +975,7 @@ class PhonebookApp(ctk.CTk):
             text_color="white"
         ).pack()
 
+        # Dropdown-meny för kategorier
         category_menu = ctk.CTkOptionMenu(
             scroll_frame,
             width=330,
@@ -970,8 +984,9 @@ class PhonebookApp(ctk.CTk):
             values=self.settings["categories"]
         )
         category_menu.pack(pady=(5, 10))
-        category_menu.set("Övrig")
+        category_menu.set("Övrig")  # Standardkategori
 
+        # Kollar om en kontakt ska ändras
         if old_name:
             name_entry.insert(0, old_name)
 
@@ -986,19 +1001,24 @@ class PhonebookApp(ctk.CTk):
             email_entry.insert(0, self.phonebook[old_name]["email"])
             category_menu.set(self.phonebook[old_name]["category"])
 
+        # Funktion för att spara kontakten
         def save_contact():
+
+            # Hämtar namn, email och kategori
             name = name_entry.get().strip().title()
             email = email_entry.get().strip()
             category = category_menu.get()
 
             numbers = []
 
+            # Kollar igenom alla nummer som skrivits in
             for entry in number_entries:
                 number = entry.get().strip()
 
                 if number:
                     numbers.append(number)
 
+            # Felhantering så man inte kan skriva utan namn och telefonnummer
             if not name or not numbers:
                 messagebox.showwarning(
                     "Fel",
@@ -1006,9 +1026,11 @@ class PhonebookApp(ctk.CTk):
                 )
                 return
 
+            # Tar bort gammal kontakt om namnet ändrats
             if old_name and old_name != name:
                 del self.phonebook[old_name]
 
+            # Sparar kontakten i telefonboken
             self.phonebook[name] = {
                 "numbers": numbers,
                 "email": email,
@@ -1033,19 +1055,22 @@ class PhonebookApp(ctk.CTk):
             command=save_contact
         ).pack(pady=25)
 
+    # Funktion som tar bort vald kontakt
     def remove_contact(self):
-        if not self.selected_name:
+        if not self.selected_name: # Kollar om en kontakt är vald
             messagebox.showwarning(
                 "Fel",
                 "Välj en kontakt först."
             )
             return
 
+        # Dubbelkollar om man är säker
         answer = messagebox.askyesno(
             "Ta bort kontakt",
             f"Vill du ta bort {self.selected_name}?"
         )
 
+        # Om man  trycker ja så tas kontakten bort
         if answer:
             del self.phonebook[self.selected_name]
 
